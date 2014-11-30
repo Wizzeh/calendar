@@ -88,7 +88,7 @@
 							pop_error("wrote to file");
 						},
 						error: function(jqXHR, textStatus, errorThrown){
-							pop_error(errorThrown);
+							pop_error("JQ: " + jqXHR + "txt: " + textStatus);
 						}
 					});
 				} 
