@@ -31,6 +31,7 @@
 		<script src="js/jquery-2.1.1.min.js"></script>
 		<script src="js/jquery.mobile-1.4.5.js"></script>
 		<script src="js/filesys.js"></script>
+		<script src="js/wizzeh/filesys.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" href="js/jquery.mobile.icons-1.4.5.css">
 		<link rel="stylesheet" href="js/jquery.mobile.theme-1.4.5.css">
@@ -73,8 +74,14 @@
 
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-			$.get("http://wizzeh.com", function(res) {
-				pop_error(res);
+			$.ajax({
+				url: "test.txt",
+				success: function(msg){
+					pop_error(msg);
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					pop_error('file not found');
+				} 
 			});
 			// pop_error("test");
 			// try {
