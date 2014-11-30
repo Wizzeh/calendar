@@ -25,7 +25,7 @@
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="msapplication-tap-highlight" content="no" />
 		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1,height=device-height, target-densitydpi=device-dpi" />
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1,target-densitydpi=device-dpi" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" href="js/jquery.mobile.icons-1.4.5.css">
 		<link rel="stylesheet" href="js/jquery.mobile.theme-1.4.5.css">
@@ -73,10 +73,10 @@
 
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-			window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.moz_requestFileSystem;
+			//window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.moz_requestFileSystem;
 			pop_error("test");
 			try {
-				requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, fsErrorHandler);
+				window.requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, fsErrorHandler);
 			} catch(e) {
 				pop_error("Caught : " + e)
 			}
