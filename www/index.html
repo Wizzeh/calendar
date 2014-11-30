@@ -73,9 +73,9 @@
 
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-			//window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem || window.moz_requestFileSystem;
 			pop_error("test");
 			try {
+				window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
 				window.requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, fsErrorHandler);
 			} catch(e) {
 				pop_error("Caught : " + e)
