@@ -75,12 +75,22 @@
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
 			$.ajax({
-				url: "tedst.txt",
+				url: "tesdt.txt",
 				success: function(msg){
 					pop_error(msg);
 				},
 				error: function(jqXHR, textStatus, errorThrown){
-					pop_error('file not found');
+					$.ajax({
+						type: 'POST',
+						data: 'HELLO',
+						url: "tesdt.txt",
+						success: function(msg){
+							pop_error("wrote to file");
+						},
+						error: function(jqXHR, textStatus, errorThrown){
+							pop_error(errorThrown);
+						}
+					});
 				} 
 			});
 			// pop_error("test");
