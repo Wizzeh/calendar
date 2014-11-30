@@ -76,7 +76,7 @@
 			pop_error("test");
 			try {
 				$(window).requestFileSystem = $(window).requestFileSystem || $(window).webkitRequestFileSystem;
-				$(window).requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, fsErrorHandler);
+				$(window).requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, fsErrorHandler);
 			} catch(e) {
 				pop_error("Caught : " + e)
 			}
