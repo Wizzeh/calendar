@@ -75,7 +75,7 @@
 		$(document).on("deviceready",function(event){
 			pop_error("test");
 			try {
-				$(window).requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+				$(window).requestFileSystem = $(window).requestFileSystem || $(window).webkitRequestFileSystem;
 				$(window).requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, fsErrorHandler);
 			} catch(e) {
 				pop_error("Caught : " + e)
