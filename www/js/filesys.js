@@ -1,6 +1,6 @@
 function filesys_enabled()
 {
-	if(window.requestFileSystem) //window.File && window.FileReader && window.FileList && window.Blob
+	if(window.File && window.FileReader && window.FileList && window.Blob) //window.requestFileSystem
 	{
 		return true;
 	}
