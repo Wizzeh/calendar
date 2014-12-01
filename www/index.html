@@ -109,9 +109,9 @@
 			// 		});
 			// 	} 
 			// });
-			pop_error("deviceready called");
-			window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-			window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
+			pop_error(LocalFileSystem);
+			// window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+			// window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
 
 			// pop_error("test");
 			// try {
