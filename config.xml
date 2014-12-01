@@ -42,9 +42,20 @@
 	<gap:plugin name="org.apache.cordova.splashscreen" />
 	<gap:plugin name="org.apache.cordova.vibration" />
 	-->
-	<feature name="http://api.phonegap.com/1.0/file"/>
+
 	<gap:plugin name="org.apache.cordova.file" />
 	<gap:plugin name="org.apache.cordova.file-transfer" />
+	<feature name="http://api.phonegap.com/1.0/file" />
+  	<feature name="File">
+		<param name="android-package" value="org.apache.cordova.file.FileUtils" />
+	</feature>
+	<feature name="FileTransfer">
+		<param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
+  	</feature>
+	<feature name="Storage">
+		<param value="org.apache.cordova.Storage" name="android-package"/>
+	</feature>
+
 
 	<icon src="icon.png" />
 	<icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
