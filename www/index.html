@@ -74,25 +74,29 @@
 
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-			$.ajax({
-				url: "tesdt.txt",
-				success: function(msg){
-					pop_error(msg);
-				},
-				error: function(jqXHR, textStatus, errorThrown){
-					$.ajax({
-						type: 'POST',
-						data: 'HELLO',
-						url: "tesdt.txt",
-						success: function(msg){
-							pop_error("wrote to file");
-						},
-						error: function(jqXHR, textStatus, errorThrown){
-							pop_error("JQ: " + jqXHR + "txt: " + textStatus);
-						}
-					});
-				} 
-			});
+			// $.ajax({
+			// 	url: "tesdt.txt",
+			// 	success: function(msg){
+			// 		pop_error(msg);
+			// 	},
+			// 	error: function(jqXHR, textStatus, errorThrown){
+			// 		$.ajax({
+			// 			type: 'POST',
+			// 			data: 'HELLO',
+			// 			url: "tesdt.txt",
+			// 			success: function(msg){
+			// 				pop_error("wrote to file");
+			// 			},
+			// 			error: function(jqXHR, textStatus, errorThrown){
+			// 				pop_error("JQ: " + jqXHR + "txt: " + textStatus);
+			// 			}
+			// 		});
+			// 	} 
+			// });
+
+
+			window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
+
 			// pop_error("test");
 			// try {
 			// 	$(window).requestFileSystem = $(window).requestFileSystem || $(window).webkitRequestFileSystem;
@@ -107,7 +111,7 @@
 		}
 
 		function onInitFs(fs){
-			pop_error("Entered init.")
+			pop_error("Entered init: " + fs.name + " " + fs.root.name)
 			fs.root.getFile('log.txt', null, function(fileEntry){ //{create: true, exclusive: true}
 				// fileEntry.file(function(file){
 				// 	var reader = new FileReader();
