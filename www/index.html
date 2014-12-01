@@ -93,7 +93,7 @@
 			// 		});
 			// 	} 
 			// });
-
+			pop_error("deviceready called");
 			try{
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
 			} catch (e) {
