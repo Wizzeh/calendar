@@ -78,15 +78,15 @@
 
 		function onInitFs(fs){
 			pop_error("Entered init: " + fs.name + " " + fs.root.name)
-			fs.root.getFile('log.txt', null, function(fileEntry){ //{create: true, exclusive: true}
-				// fileEntry.file(function(file){
-				// 	var reader = new FileReader();
-				// 	reader.onloadend = function(e) {
-				// 		pop_error("HI" + this.result);
-				// 	}
-				//});
-				pop_error("Got this far.");
-			},fsErrorHandler);
+			// fs.root.getFile('log.txt', null, function(fileEntry){ //{create: true, exclusive: true}
+			// 	// fileEntry.file(function(file){
+			// 	// 	var reader = new FileReader();
+			// 	// 	reader.onloadend = function(e) {
+			// 	// 		pop_error("HI" + this.result);
+			// 	// 	}
+			// 	//});
+			// 	pop_error("Got this far.");
+			// },fsErrorHandler);
 
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
@@ -110,7 +110,8 @@
 			// 	} 
 			// });
 			pop_error("deviceready called");
-				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
+			window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+			window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
 
 			// pop_error("test");
 			// try {
