@@ -53,6 +53,21 @@
 			for(var i=0; i<collapsibles.length; i++) {
 				if(collapsibles[i].className.indexOf("ui-collapsible-collapsed") != -1) {
 			 		//collapsibles[i].hide();
+			 		var db = openDatabase('testdb','1.0',"test database",1024*1024);
+			 		db.transaction(function(tx) {	
+			 			tx.executeSql('CREATE TABLE IF NOT EXISTS foo (id unique, text)');
+			 			tx.executeSql('INSERT INTO foo (id, text) VALUES (?,"whatever")', [Math.random()] );
+			 			tx.executeSql('SELECT * FROM foo', [], function(tx, results){
+			 				var len = results.rows.length, i;
+			 				strouts = "t";
+			 				for(i = 0; i < len; i++)
+			 				{
+			 					strouts = strouts + (results.rows.item(i).id + " " + results.rows.item(i).text);
+			 				}
+			 				pop_error(strouts);
+			 			});
+
+			 		});
 			 		$( "#" + collapsibles[i].id ).hide(400);
 			 	}
 			 }
