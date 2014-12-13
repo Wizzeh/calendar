@@ -1,3 +1,9 @@
+Node version: v0.10.33
+
+Cordova version: 4.1.2
+
+Config.xml file: 
+
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.wizzeh.smuscalendar" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
 	<name>SMUS Calendar</name>
@@ -84,3 +90,11 @@
 	<gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
 	<access origin="*" />
 </widget>
+
+
+Plugins: 
+
+org.apache.cordova.file,org.apache.cordova.file-transfer
+
+No Platforms Currently Installed
+
