@@ -32,6 +32,7 @@
 		<script src="js/jquery-2.1.1.min.js"></script>
 		<script src="js/jquery.mobile-1.4.5.js"></script>
 		<script src="js/filesys.js"></script>
+		<script src="js/calendarparser.js"></script>
 		<!-- <script src="js/wizzeh/filesys.js"></script> -->
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" href="js/jquery.mobile.icons-1.4.5.css">
@@ -53,25 +54,25 @@
 			for(var i=0; i<collapsibles.length; i++) {
 				if(collapsibles[i].className.indexOf("ui-collapsible-collapsed") != -1) {
 			 		//collapsibles[i].hide();
-			 		var db = openDatabase('testdb','1.0',"test database",1024*1024);
-			 		db.transaction(function(tx) {
-			 			tx.executeSql('CREATE TABLE IF NOT EXISTS foo (id unique, text)');
-			 			tx.executeSql('INSERT INTO foo (id, text) VALUES (?,"whatever")', [new Date().getSeconds()] );
-			 			tx.executeSql('SELECT * FROM foo', [], function(tx, results){
-			 				var len = results.rows.length, i;
-			 				strouts = "t";
-			 				for(i = 0; i < len; i++)
-			 				{
-			 					strouts = strouts + (results.rows.item(i).id + " " + results.rows.item(i).text);
-			 				}
-			 				pop_error(strouts);
-			 			});
+			 		// var db = openDatabase('testdb','1.0',"test database",1024*1024);
+			 		// db.transaction(function(tx) {
+			 		// 	tx.executeSql('CREATE TABLE IF NOT EXISTS foo (id unique, text)');
+			 		// 	tx.executeSql('INSERT INTO foo (id, text) VALUES (?,"whatever")', [new Date().getSeconds()] );
+			 		// 	tx.executeSql('SELECT * FROM foo', [], function(tx, results){
+			 		// 		var len = results.rows.length, i;
+			 		// 		strouts = "t";
+			 		// 		for(i = 0; i < len; i++)
+			 		// 		{
+			 		// 			strouts = strouts + (results.rows.item(i).id + " " + results.rows.item(i).text);
+			 		// 		}
+			 		// 		pop_error(strouts);
+			 		// 	});
 
-			 		});
-					$.get("http://wizzeh.com/", {}, function(res) {
-						pop_error(res);
-					});
-					txtFile.send(null);
+			 		// });
+					start_database("");
+					// $.get("http://wizzeh.com/", {}, function(res) {
+					// 	pop_error(res);
+					// });
 			 		$( "#" + collapsibles[i].id ).hide(400);
 			 	}
 			 }
