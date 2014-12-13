@@ -5,7 +5,7 @@ function start_database(path)
 	window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
 	window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
-	const dbname = "TestDB";
+	const dbname = "TesttttttDB";
 
 	var db;
 	var request = window.indexedDB.open(dbname, 1);
@@ -13,6 +13,7 @@ function start_database(path)
 		pop_error(event);
 	};
 	request.onsuccess = function(event) {
+
 		db = event.target.result;
 		db.onerror = function(event) {
 			pop_error("Database error: " + event);
@@ -26,49 +27,29 @@ function start_database(path)
 		db.onerror = function(event) {
 			pop_error("Database error: " + event);
 		};
-		//code here to alert the user that we're doing something to prepare their page please
-
-
-
-		// $.get(path, {}, function(res) {
-			
-		// });
-
+		pop_loading(true);
 		var objectStore = db.createObjectStore("events", { keyPath: "ID", autoIncrement: true});
 		objectStore.createIndex("name", "name", {unique: false});
-		objectStore.transaction.oncomplete = function(event) {
-			var q = [ {ID: 5, name: "John", size: "Medium"}, {name: "Jill", size: "Small"} ];
-			var objectAdder = db.transaction("events", "readwrite").objectStore("events");
+		$.get(path, {}, function(res) {
+
+			//code here to alert the user that we're doing something to prepare their page please
+
+			//objectStore.transaction.oncomplete = function(event) {
+			var transaction = db.transaction("events","readwrite");
+			transaction.oncomplete = function(event) {
+				pop_loading(false);
+			};
+			var q = [ {ID: 5, name: "John", size: "Medium"}, {name: "Jill", size: "Small"}];
+			var objectAdder = transaction.objectStore("events");
 			for (var i in q) {
 				objectAdder.add(q[i]);
 			}
-		};
+			//};
+			pop_error(res);
+		});
+		
 
 	};
 
 
 }
-
-// indexedDB.db = null;
-// indexedDB.onerror = function(e) {
-// 	pop_error(e);
-// };
-
-// indexedDB.open = function() {
-// 	var version = "1.0";
-// 	var request = indexedDB.open("foo",v);
-
-// 	request.onupgradeneeded = function(e) {
-// 		var db = request.result;
-// 		var store = db.createObjectStore("foos", {keyPath: "ID"});
-// 	};
-
-// 	request.onsuccess = function(e) {
-// 		indexedDB.db = e.target.result;
-
-// 		pop_error("Success");
-// 	};
-
-// 	request.onfailure = indexedDB.onerror;
-
-// };

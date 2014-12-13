@@ -33,6 +33,7 @@
 		<script src="js/jquery.mobile-1.4.5.js"></script>
 		<script src="js/filesys.js"></script>
 		<script src="js/calendarparser.js"></script>
+		<script src="js/ui.js"></script>
 		<!-- <script src="js/wizzeh/filesys.js"></script> -->
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" href="js/jquery.mobile.icons-1.4.5.css">
@@ -40,14 +41,6 @@
 		<link rel="stylesheet" href="js/jquery.mobile.structure-1.4.5.css">
 		<title>Test Page</title>
 		<script>
-		function pop_error(text)
-		{
-			console.log(text);
-			$("#errorpoptext").text(text);
-			$("#errorconsole").text(text);
-			$("#errorpops").popup("open");
-		}
-
 		$(document).bind('collapsibleexpand');
 		$(document).on( 'collapsibleexpand',function(event){
 			collapsibles = document.getElementById('testsection').children;
@@ -69,7 +62,7 @@
 			 		// 	});
 
 			 		// });
-					start_database("");
+					start_database("http://wizzeh.com/"); //Example destination
 					// $.get("http://wizzeh.com/", {}, function(res) {
 					// 	pop_error(res);
 					// });
@@ -157,10 +150,20 @@
 			</div>
 			<div data-role="content" class="content-primary" style="padding-top:0px;">
 				<p id="errorconsole">Nothing in the error log</p>
-				<div data-role="popup" id="errorpops" class="ui-content">
+
+				<!-- Normally-hidden error popups. These are triggered by javascript -->
+
+				<div data-role="popup" id="popup_error" class="ui-content">
 				    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Close</a>
-					<p id="errorpoptext">You shouldn't be seeing this popup.<p>
+					<p id="popup_error_text">You shouldn't be seeing this popup.<p>
 				</div>
+
+				<div data-role="popup" id="popup_loading" class="ui-content" data-dismissible="false">
+					<p>Please wait for loading to finish.</p>
+				</div>
+
+				<!-- End of popups -->
+
 				<div data-role="collapsible-set" id="testsection" data-inset="false" data-collapsed-icon="false" data-expanded-icon="false">
 					<div data-role="collapsible" id="day1">
 						<h4>Today<br />Day 1</h4>
