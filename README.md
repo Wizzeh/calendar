@@ -20,6 +20,7 @@ Please contact me at me@wizzeh.com or through Facebook if you want to help contr
 * Try to keep everything as portable as possible. Generally, this won't be a problem unless you introduce new plugins or HTML5 features. Obviously, this only applies within the limits of reason, ie. major operating systems only.
 * There's probably more and I will add it as I think of it.
 * You can use pop_error(text); to debug for the moment. Please use this over console.log, even though it is annoying and slow, because I don't want to go fishing around for debug statements to remove.
+* Please don't follow my example with commits. It was a dark time in my life, ok?
 
 ### Implemented Features
 * Test Layout
