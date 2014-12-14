@@ -5,6 +5,7 @@ function pop_error(text)
 	$("#errorconsole").text(text);
 	$("#popup_error").popup("open");
 }
+
 function pop_loading(enable)
 {
 	if(enable == true)
