@@ -134,8 +134,8 @@
 			// 	);
 		});
 
-		$(document).bind("pageload");
-		$(document).on("pageload",function(event){
+		$(document).bind("pageshow");
+		$(document).on("pageshow",function(event){
 			t_page_loaded = true;
 			pop_error("page loaded");
 			if(!event_database) {
