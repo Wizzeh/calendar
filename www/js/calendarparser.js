@@ -1,13 +1,10 @@
+window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
+const dbname = "Events_30";
 function start_database(path,path2)
 {
-	window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
-	window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-	window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
-
-	const dbname = "Events_12";
-
-
 	var updatingdb = false; //Sets to true if the database has to be populated.
 	var db;
 	var request = window.indexedDB.open(dbname, 1);
@@ -23,9 +20,10 @@ function start_database(path,path2)
 			};
 			//This is creating an error. Hunt it down and kill it.
 			//calendarparser.js:22 Uncaught TypeError: Cannot read property 'name' of undefined
-			db.transaction("events").objectStore("events").get(500).onsuccess = function(events) {
-				pop_error(events.target.result.name);
-			};
+			// db.transaction("events").objectStore("events").get(1).onsuccess = function(events) {
+			// 	pop_error(events.target.result);
+			// };
+			database_started(db);
 		}
 	};
 	request.onupgradeneeded = function(event) {
@@ -38,26 +36,24 @@ function start_database(path,path2)
 		var objectStore = db.createObjectStore("events", {autoIncrement: true});
 		objectStore.createIndex("flags", "flags", {unique: false});
 		objectStore.createIndex("start_date", "start_date", {unique: false});
-		pop_error("before");
 		//var finishedAdding = false;
 		objectStore.transaction.oncomplete = function(event) {
-			$.ajax({ url: path, async: false, success: function(res) {
-				$.ajax({ url: path2, async: false, success: function(res2){
+			$.ajax({ url: path, async: true, success: function(res) {
+				$.ajax({ url: path2, async: true, success: function(res2){
 					res = res + "\n" + res2;
 					var transaction = db.transaction("events", "readwrite");
 					transaction.oncomplete = function(event) {
-						pop_loading(false)
+						pop_loading(false);
+						database_started(db);
 					};
 
 					var objectAdder = transaction.objectStore("events");
 
 					var finished_parsing_cal = false;
 					var lines = res.split('\n');
-					pop_error(lines[0]);
 					var i = 0;
 					var filesended = 0;
 					var eventarray = [];
-					pop_error(lines[i].trim()=='BEGIN:VCALENDAR');//BEGIN:VCALENDAR
 					while (finished_parsing_cal == false)
 					{
 						var line = lines[i].trim();
@@ -217,14 +213,12 @@ function start_database(path,path2)
 										i++;
 									}
 								}
-								//pop_error(eventobj);
 								objectAdder.add(eventobj);
 							}
 						}
 						i++;
 					}
-
-
+					
 					// var q = [ {ID: 5, name: "John", size: "Medium"}, {name: "Jill", size: "Small"}];
 					
 					// for (var i in q) {
@@ -236,8 +230,36 @@ function start_database(path,path2)
 			}});
 		};
 		updatingdb = false;
-		pop_error("after");
 	};
+}
+
+
+function database_started(db)
+{
+	event_database = db;
+
+	getEventsFor("20150203");
+	 //Trying to assign a global here
+	// var objectStore = db.transaction("events").objectStore("events");
+	// objectStore.openCursor().onsuccess = function(event) {
+	// 	var cursor = event.target.result;
+	// 	if(cursor)
+	// 	{
+	// 		cursor.continue();
+	// 	}
+	// };
+}
+
+function getEventsFor(date) {
+	var objectStore = event_database.transaction("events").objectStore("events");
+	var keyRange = IDBKeyRange.only(date);
+	objectStore.index("start_date").openCursor(keyRange).onsuccess = function(event) {
+		var cursor = event.target.result;
+		if(cursor) {
+			pop_error(cursor.value.name);
+			cursor.continue();
+		}
+	}
 }
 
 function getFlags(value)

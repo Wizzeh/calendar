@@ -43,7 +43,7 @@
 		<script>
 		$(document).bind('collapsibleexpand');
 		$(document).on( 'collapsibleexpand',function(event){
-			collapsibles = document.getElementById('testsection').children;
+			collapsibles = document.getElementById('collapsible_container').children;
 			for(var i=0; i<collapsibles.length; i++) {
 				if(collapsibles[i].className.indexOf("ui-collapsible-collapsed") != -1) {
 			 		//collapsibles[i].hide();
@@ -65,6 +65,7 @@
 					start_database("https://sds.smus.ca/student_timetable/25b6f23339cf25078c19dccfed606cbbb4678ffcd50b6f2c0a1e37542f02c65b",
 						"https://sds.smus.ca/export_calendar/break,day,period,event/10,26,16,11,5,4,8,9,25,6,28,1,3,2,20,29,30,22,31,23,18,17,19,32,33,34,21,12,13,14,15,7"
 					); //Example destination
+
 					// $.get("http://wizzeh.com/", {}, function(res) {
 					// 	pop_error(res);
 					// });
@@ -75,9 +76,9 @@
 
 		$(document).bind('collapsiblecollapse');
 		$(document).on( 'collapsiblecollapse',function(event){
-			collapsibles = document.getElementById('testsection').children;
+			collapsibles = document.getElementById('collapsible_container').children;
 
-			//document.getElementById('testsection').collapsible-set('refresh')
+			//document.getElementById('collapsible_container').collapsible-set('refresh')
 			//console.log(collapsibles.length)
 			for(var i=0; i<collapsibles.length; i++) {
 				if(!$(collapsibles[i]).is(":visible")) {
@@ -125,17 +126,9 @@
 			// 		});
 			// 	} 
 			// });
-			pop_error(filesys_enabled);
-			// window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-			// window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 onInitFS, fsErrorHandler);
+			// $("#collapsible_container").append(
 
-			// pop_error("test");
-			// try {
-			// 	$(window).requestFileSystem = $(window).requestFileSystem || $(window).webkitRequestFileSystem;
-			// 	$(window).requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, fsErrorHandler);
-			// } catch(e) {
-			// 	pop_error("Caught : " + e)
-			// }
+			// 	);
 		});
 		</script>
 	</head>
@@ -160,13 +153,14 @@
 					<p id="popup_error_text">You shouldn't be seeing this popup.<p>
 				</div>
 
-				<div data-role="popup" id="popup_loading" class="ui-content" data-dismissible="false">
-					<p>Please wait for loading to finish.</p>
+				<div data-role="popup" id="popup_loading" class="ui-content" data-dismissible="false" data-theme="none" data-shadow="false" data-overlay-theme="a" align="center">
+					<img src = "res/ajax-loader.gif">
+					<p>Please wait...</p>
 				</div>
 
 				<!-- End of popups -->
 
-				<div data-role="collapsible-set" id="testsection" data-inset="false" data-collapsed-icon="false" data-expanded-icon="false">
+				<div data-role="collapsible-set" id="collapsible_container" data-inset="false" data-collapsed-icon="false" data-expanded-icon="false">
 					<div data-role="collapsible" id="day1">
 						<h4>Today<br />Day 1</h4>
 						<p id="testpara1">I'm the collapsible set content for section 1.</p>
@@ -193,13 +187,6 @@
 					</div>
 
 				</div>
-
-				<form id="sliderUIContainer">
-				<label for="slider-0" class="ui-hidden-accessible">Input Slider</label>
-				<input type="range" name="slider" id="slider-0" value="0" min="0" max="20" />
-				</form>
-
-				<a href="#" data-role="button">Link button</a>
 			</div>
 			<div data-role="footer">
 				<h4>Footer</h4>
