@@ -134,6 +134,12 @@
 			}
 			else
 			{
+				$(".day").each(function(index){
+				if(!$(this).is(":visible"))
+				{
+					$(this).show(400);
+				}
+				});
 				do_other_days($.mobile.activePage.attr('id'));
 			}
 
