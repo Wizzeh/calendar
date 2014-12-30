@@ -70,6 +70,38 @@
 
 		});
 
+		$( document ).on( "swiperight", function() {
+			var current_page = $.mobile.activePage.attr('id');
+			if(current_page == "page_1" || current_page == "page_4")
+			{
+				$.mobile.changePage( "#page_2", { transition: "slide", reverse: true });
+			}
+			else if(current_page == "page_2")
+			{
+				$.mobile.changePage( "#page_3", { transition: "slide", reverse: true });
+			}
+        	else if(current_page == "page_3")
+			{
+				$.mobile.changePage( "#page_1", { transition: "slide", reverse: true });
+			}
+        });
+
+        $( document ).on( "swipeleft", function() {
+			var current_page = $.mobile.activePage.attr('id');
+			if(current_page == "page_1" || current_page == "page_4")
+			{
+				$.mobile.changePage( "#page_3", { transition: "slide"});
+			}
+			else if(current_page == "page_2")
+			{
+				$.mobile.changePage( "#page_1", { transition: "slide"});
+			}
+        	else if(current_page == "page_3")
+			{
+				$.mobile.changePage( "#page_2", { transition: "slide"});
+			}
+        });
+
 		page_created = false;
 		$(document).bind("pagebeforecreate");
 		$(document).on("pagebeforecreate",function(event){
