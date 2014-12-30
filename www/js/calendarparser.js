@@ -2,7 +2,7 @@ window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndex
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
 window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
-const dbname = "Events_30";
+const dbname = "Events_44";
 function start_database(path,path2)
 {
 	var updatingdb = false; //Sets to true if the database has to be populated.
@@ -27,6 +27,7 @@ function start_database(path,path2)
 		}
 	};
 	request.onupgradeneeded = function(event) {
+		pop_error("Updating DB");
 		db = event.target.result;
 		updatingdb = true;
 		db.onerror = function(event) {
@@ -35,7 +36,7 @@ function start_database(path,path2)
 		pop_loading(true);
 		var objectStore = db.createObjectStore("events", {autoIncrement: true});
 		objectStore.createIndex("flags", "flags", {unique: false});
-		objectStore.createIndex("start_date", "start_date", {unique: false});
+		objectStore.createIndex("current_date", "current_date", {unique: false});
 		//var finishedAdding = false;
 		objectStore.transaction.oncomplete = function(event) {
 			$.ajax({ url: path, async: true, success: function(res) {
@@ -43,7 +44,7 @@ function start_database(path,path2)
 					res = res + "\n" + res2;
 					var transaction = db.transaction("events", "readwrite");
 					transaction.oncomplete = function(event) {
-						pop_loading(false);
+						
 						database_started(db);
 					};
 
@@ -75,7 +76,7 @@ function start_database(path,path2)
 								var eventobj = { start_date:-1, start_hour: -1, start_minute: -1,
 									start_second: -1, end_date: -1, end_hour: -1, end_minute: -1,
 									end_second: -1, name:"NO_NAME", location:"", status:"CONFIRMED",
-									fulltext: "", flags: 0
+									fulltext: "", flags: 0, current_date:-1
 								};
 								while(finished_parsing_evt == false)
 								{
@@ -115,7 +116,14 @@ function start_database(path,path2)
 											//Last digit:  0123456789012345
 											//T indicates the switch to time
 											//Z indicates that the time is in UTC
+
+
 											var date = value.substr(0,8);
+											var date_only = false;
+
+											// var year = value.substring(0,4);
+											// var month = value.substring(4,6);
+											// var day = value.substring(6,8);
 											if(subfield != "VALUE=DATE")
 											{
 												var hour = value.substr(9,2);
@@ -124,6 +132,7 @@ function start_database(path,path2)
 											}
 											else
 											{
+												date_only = true;
 												var hour = -1;
 												var minute = -1;
 												var second = -1;
@@ -138,7 +147,23 @@ function start_database(path,path2)
 											}
 											else
 											{
-												eventobj.end_date = date;
+												if(date_only)
+												{
+													var end_date = new Date(date.substring(0,4),date.substring(4,6)-1,
+														date.substring(6,8));
+
+													end_date.setDate(end_date.getDate() - 1);
+
+													end_date_string = zero_pad(end_date.getFullYear(),4).toString() + 
+														zero_pad((end_date.getMonth()+1),2).toString() + zero_pad(end_date.getDate(),2).toString();
+
+													eventobj.end_date = end_date_string;
+												}
+												else
+												{
+													eventobj.end_date = date;
+												}
+
 												eventobj.end_hour = hour;
 												eventobj.end_minute = minute;
 												eventobj.end_second = second;
@@ -194,6 +219,7 @@ function start_database(path,path2)
 											24 Volleyball [Senior School: Athletics: Volleyball]
 											25 Soccer [Senior School: Athletics: Soccer]
 											26 Basketball [Senior School: Athletics: Basketball] 
+											27 Timetable override
 											
 											Note: Good form will be to tag an event with ALL tags
 											applicable to it, regardless of whether it possesses
@@ -203,7 +229,14 @@ function start_database(path,path2)
 											*/
 											pow = Math.pow
 
-											eventobj.flags = getFlags(value);
+											eventobj.flags |= get_flags(value);
+										}
+										else if(field == "UID")
+										{
+											if(value.indexOf("period_override") != -1)
+											{
+												eventobj.flags |= Math.pow(2,27);
+											}
 										}
 										else
 										{
@@ -213,14 +246,40 @@ function start_database(path,path2)
 										i++;
 									}
 								}
-								objectAdder.add(eventobj);
+
+								var done_adding = false;
+								var current_date = new Date(eventobj.start_date.substring(0,4),eventobj.start_date.substring(4,6)-1,
+									eventobj.start_date.substring(6,8));
+								var end_date = new Date(eventobj.end_date.substring(0,4),eventobj.end_date.substring(4,6)-1,
+									eventobj.end_date.substring(6,8));
+								var m = 0;
+								while(!done_adding)
+								{
+									current_date.setDate(current_date.getDate()+m);
+
+									current_date_string = zero_pad(current_date.getFullYear(),4).toString() + 
+										zero_pad((current_date.getMonth()+1),2).toString() + zero_pad(current_date.getDate(),2).toString();
+
+									if(m == 1)
+									{
+										console.log(eventobj.name + ": " + current_date_string);
+									}
+
+									eventobj.current_date = current_date_string;
+									objectAdder.add(eventobj);
+									
+									if(current_date.getTime() == end_date.getTime())
+									{
+										done_adding = true;
+									}
+									m=1;
+								}
 							}
 						}
 						i++;
 					}
 					
 					// var q = [ {ID: 5, name: "John", size: "Medium"}, {name: "Jill", size: "Small"}];
-					
 					// for (var i in q) {
 					// 	objectAdder.add(q[i]);
 					// }
@@ -238,7 +297,19 @@ function database_started(db)
 {
 	event_database = db;
 
-	getEventsFor("20150203");
+	var today = new Date();
+	var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+	var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
+
+	console.log("dbstart");
+	populate_days("page_1",daystring,true);
+
+	// var x = $(".day");
+	// for(var i=0; i<x.length; i++)
+	// {
+	// 	$(".daypara",$(x[i])).html(x[i].id);
+	// }
+	pop_loading(false);
 	 //Trying to assign a global here
 	// var objectStore = db.transaction("events").objectStore("events");
 	// objectStore.openCursor().onsuccess = function(event) {
@@ -250,19 +321,25 @@ function database_started(db)
 	// };
 }
 
-function getEventsFor(date) {
+function populate_events(current_date){
+
+}
+
+
+//This method doesn't work because the API is asynchronous
+function get_events_for(date) {
 	var objectStore = event_database.transaction("events").objectStore("events");
 	var keyRange = IDBKeyRange.only(date);
-	objectStore.index("start_date").openCursor(keyRange).onsuccess = function(event) {
+	objectStore.index("current_date").openCursor(keyRange).onsuccess = function(event) {
 		var cursor = event.target.result;
 		if(cursor) {
-			pop_error(cursor.value.name);
+			console.log(cursor.value.name);
 			cursor.continue();
 		}
 	}
 }
 
-function getFlags(value)
+function get_flags(value)
 {
 	flags = 0;
 

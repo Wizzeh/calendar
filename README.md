@@ -8,7 +8,9 @@ The SMUS Calendar will be a mobile app to help students keep track of schedules,
 Tentatively, the source, where applicable, is under the MIT license.
 
 ### Building
-www/index.html is the main page for the app, and it will work to some degree if you open it in Firefox or Chrome, however, it will be missing the features provided by PhoneGap and Cordova, which means it will probably break more and more as development progresses. To make it work properly, you will have to build it using Cordova, for which you can find the instructions online, but it is easier to use Adobe's PhoneGap Build service. If you plan to run the app in Chrome without compiling, you will have to create a new shortcut to Chrome with "--user-data-dir="C:/Chrome dev session" --disable-web-security" added to the end. This is because Chrome's base security measures won't let you access web pages from locally hosted HTML. I haven't tested it in Firefox, but a similar measure might be necessary.
+www/index.html is the main page for the app, and it will work to some degree if you open it in Firefox or Chrome, however, it will be missing the features provided by PhoneGap and Cordova, which means it will probably break more and more as development progresses. To make it work properly, you will have to build it using Cordova, for which you can find the instructions online, but it is easier to use Adobe's PhoneGap Build service. 
+
+If you plan to run the app in Chrome without compiling, you will have to create a new Chrome shortcut somewhere with "--user-data-dir="C:/Chrome dev session" --disable-web-security" added to the end of the link thing. This is because Chrome's base security measures won't let you access web pages from locally hosted HTML. I haven't tested it in Firefox, but a similar measure might be necessary.
 
 ### Contributing
 Please contact me at me@wizzeh.com or through Facebook if you want to help contribute. I will add you as a collaborator to the PhoneGap Build page. If you're new to git or github, but feel you can still contribute coding-wise, I would be happy to show you how to set everything up.

@@ -1,24 +1,4 @@
 <!DOCTYPE html>
-<!--
-	Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
-
-	Licensed to the Apache Software Foundation (ASF) under one
-	or more contributor license agreements.  See the NOTICE file
-	distributed with this work for additional information
-	regarding copyright ownership.  The ASF licenses this file
-	to you under the Apache License, Version 2.0 (the
-	"License"); you may not use this file except in compliance
-	with the License.  You may obtain a copy of the License at
-
-	http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing,
-	software distributed under the License is distributed on an
-	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-	 KIND, either express or implied.  See the License for the
-	specific language governing permissions and limitations
-	under the License.
--->
 <html>
 	<head>
 		<meta charset="utf-8" />
@@ -26,185 +6,419 @@
 		<meta name="msapplication-tap-highlight" content="no" />
 		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		
+
 		<script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
 		<script type="text/javascript" src="lib/phonegap.js"></script>
+		
+
 		<script src="js/jquery-2.1.1.min.js"></script>
 		<script src="js/jquery.mobile-1.4.5.js"></script>
+		
+
 		<script src="js/filesys.js"></script>
 		<script src="js/calendarparser.js"></script>
 		<script src="js/ui.js"></script>
+		<script src="js/settings.js"></script>
+		<script src="js/utilities.js"></script>
+
+
+		<script src="res/localization.js"></script>
 		<!-- <script src="js/wizzeh/filesys.js"></script> -->
+
+
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" href="js/jquery.mobile.icons-1.4.5.css">
 		<link rel="stylesheet" href="js/jquery.mobile.theme-1.4.5.css">
 		<link rel="stylesheet" href="js/jquery.mobile.structure-1.4.5.css">
+
+
 		<title>Test Page</title>
 		<script>
+		event_database = false;
 		$(document).bind('collapsibleexpand');
 		$(document).on( 'collapsibleexpand',function(event){
-			collapsibles = document.getElementById('collapsible_container').children;
-			for(var i=0; i<collapsibles.length; i++) {
-				if(collapsibles[i].className.indexOf("ui-collapsible-collapsed") != -1) {
-			 		//collapsibles[i].hide();
-			 		// var db = openDatabase('testdb','1.0',"test database",1024*1024);
-			 		// db.transaction(function(tx) {
-			 		// 	tx.executeSql('CREATE TABLE IF NOT EXISTS foo (id unique, text)');
-			 		// 	tx.executeSql('INSERT INTO foo (id, text) VALUES (?,"whatever")', [new Date().getSeconds()] );
-			 		// 	tx.executeSql('SELECT * FROM foo', [], function(tx, results){
-			 		// 		var len = results.rows.length, i;
-			 		// 		strouts = "t";
-			 		// 		for(i = 0; i < len; i++)
-			 		// 		{
-			 		// 			strouts = strouts + (results.rows.item(i).id + " " + results.rows.item(i).text);
-			 		// 		}
-			 		// 		pop_error(strouts);
-			 		// 	});
 
-			 		// });
-			/*
-					start_database("https://sds.smus.ca/student_timetable/25b6f23339cf25078c19dccfed606cbbb4678ffcd50b6f2c0a1e37542f02c65b",
-						"https://sds.smus.ca/export_calendar/break,day,period,event/10,26,16,11,5,4,8,9,25,6,28,1,3,2,20,29,30,22,31,23,18,17,19,32,33,34,21,12,13,14,15,7"
-					); //Example destination
-			*/
-					pop_error(t_page_loaded);
-					// $.get("http://wizzeh.com/", {}, function(res) {
-					// 	pop_error(res);
-					// });
-			 		$( "#" + collapsibles[i].id ).hide(400);
-			 	}
-			 }
+			$(".day").each(function(index){
+				if($(this).hasClass("ui-collapsible-collapsed"))
+				{
+					$(this).hide(400);
+				}
+			});
+
 		});
 
 		$(document).bind('collapsiblecollapse');
 		$(document).on( 'collapsiblecollapse',function(event){
-			collapsibles = document.getElementById('collapsible_container').children;
 
-			//document.getElementById('collapsible_container').collapsible-set('refresh')
-			//console.log(collapsibles.length)
-			for(var i=0; i<collapsibles.length; i++) {
-				if(!$(collapsibles[i]).is(":visible")) {
-			 		//collapsibles[i].hide();
-			 		$( "#" + collapsibles[i].id ).show(400);
-			 		//console.log(collapsibles[i].id)
-			 	}
-			 }
+			$(".day").each(function(index){
+				if(!$(this).is(":visible"))
+				{
+					$(this).show(400);
+				}
+			});
+
 		});
 
 		function fsErrorHandler(e){
 		  	pop_error("Error handler: " + e.name + ": " + e.message);
 		}
 
-		function onInitFs(fs){
-			pop_error("Entered init: " + fs.name + " " + fs.root.name);
-			// fs.root.getFile('log.txt', null, function(fileEntry){ //{create: true, exclusive: true}
-			// 	// fileEntry.file(function(file){
-			// 	// 	var reader = new FileReader();
-			// 	// 	reader.onloadend = function(e) {
-			// 	// 		pop_error("HI" + this.result);
-			// 	// 	}
-			// 	//});
-			// 	pop_error("Got this far.");
-			// },fsErrorHandler);
-		}
-
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-			// $.ajax({
-			// 	url: "tesdt.txt",
-			// 	success: function(msg){
-			// 		pop_error(msg);
-			// 	},
-			// 	error: function(jqXHR, textStatus, errorThrown){
-			// 		$.ajax({
-			// 			type: 'POST',
-			// 			data: 'HELLO',
-			// 			url: "tesdt.txt",
-			// 			success: function(msg){
-			// 				pop_error("wrote to file");
-			// 			},
-			// 			error: function(jqXHR, textStatus, errorThrown){
-			// 				pop_error("JQ: " + jqXHR + "txt: " + textStatus);
-			// 			}
-			// 		});
-			// 	} 
-			// });
-			// $("#collapsible_container").append(
 
-			// 	);
 		});
+
+		page_created = false;
+		$(document).bind("pagebeforecreate");
+		$(document).on("pagebeforecreate",function(event){
+
+			/*
+			Horrible string building incoming...
+			Current Page 	Previous Page 	Next Page
+			1 				2 				3
+			2 				3 				1
+			3 				1 				2
+			*/
+			if(!page_created)
+			{
+				var base_page = "";
+				base_page = "<div data-role='header'>"
+					+ "<h1>" + LOC_PAGE_TITLE + "</h1>"
+					+ "<div data-role='navbar'>"
+						+ "<ul>"
+							+ "<li><a href='#page_{0}'>{0}</a></li>"
+							+ "<li><a href='#page_{1}'>{1}</a></li>"
+							+ "<li><a href='#page_{2}'>{2}</a></li>"
+						+ "</ul>"
+					+ "</div>"
+				+ "</div>"
+				+ "<div data-role='content' class='content-primary' style='padding-top:0px;'>"
+					+ "<p id='errorconsole'>Nothing in the error log</p>"
+					+ "<div data-role='popup' id='popup_error' class='ui-content'>"
+						+ "<a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left'>Close</a>"
+						+ "<p id='popup_error_text'>You shouldn't be seeing this popup.</p>"
+					+ "</div>"
+					+ "<div data-role='popup' id='popup_loading' class='ui-content' data-dismissible='false' data-theme='none' data-shadow='false' data-overlay-theme='a' align='center'>"
+						+ "<img src='res/ajax-loader.gif'>"
+						+ "<p>Please wait...</p>"
+					+ "</div>"
+					+ "<div data-role='collapsible-set' id='collapsible_container' data-inset='false' data-collapsed-icon='false' data-expanded-icon='false' class='dayscontainer'>"
+					+ "</div>"
+					+ "<div id='button_spot_{1}' class='button_spot'></div>"
+				+ "</div>"
+				+ "<div data-role='footer'>"
+					+ "<h4>" + LOC_PAGE_FOOTER + "</h4>"
+				+ "</div>"
+
+
+				// Previous/Current/Next
+				$("#page_1").html(base_page.format("2","1","3"));
+				$("#page_4").html(base_page.format("2","1","3"));
+				$("#page_2").html(base_page.format("3","2","1"));
+				$("#page_3").html(base_page.format("1","3","2"));
+				page_created = true;
+			}
+
+			});
 
 		$(document).bind("pageshow");
 		$(document).on("pageshow",function(event){
 			t_page_loaded = true;
-			pop_error("page loaded");
 			if(!event_database) {
+				console.log("bad bad");
 				start_database("https://sds.smus.ca/student_timetable/25b6f23339cf25078c19dccfed606cbbb4678ffcd50b6f2c0a1e37542f02c65b",
 						"https://sds.smus.ca/export_calendar/break,day,period,event/10,26,16,11,5,4,8,9,25,6,28,1,3,2,20,29,30,22,31,23,18,17,19,32,33,34,21,12,13,14,15,7"
 				);
 			}
+			else
+			{
+				do_other_days($.mobile.activePage.attr('id'));
+			}
+
 		});
+
+
+		function do_other_days(element)
+		{
+			var prev = "";
+			var next = "";
+			var day_first = "";
+			
+			if(element == "page_1")
+			{
+				prev = "page_2";
+				next = "page_3";
+				day_last = G_LAST_DAY.page_1;
+				day_first = G_FIRST_DAY.page_1;
+			}
+			else if(element == "page_2")
+			{
+				prev = "page_3";
+				next = "page_1";
+				day_last = G_LAST_DAY.page_2;
+				day_first = G_FIRST_DAY.page_2;
+			}
+			else if(element == "page_3")
+			{
+				prev = "page_1";
+				next = "page_2";
+				day_last = G_LAST_DAY.page_3;
+				day_first = G_FIRST_DAY.page_3;
+			}
+			else
+			{
+				prev = "page_2";
+				next = "page_3";
+				var today = new Date();
+				var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+				day_first = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
+
+				var q=0;
+				while(q<(PREF_MAX_EVENTS-1))
+				{
+					d.setDate(d.getDate()+1);
+					if(d.getDay() == 0)
+					{
+
+					}
+					else
+					{
+						q++;
+					}
+				}
+				day_last = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
+			}
+			var i=0;
+			var d = new Date(day_first.substring(0,4),day_first.substring(4,6)-1,day_first.substring(6,8),12);
+			while(i<(PREF_MAX_EVENTS-1))
+			{
+				d.setDate(d.getDate()-1);
+				if(d.getDay() == 0)
+				{
+					//don't count sundays
+				}
+				else
+				{
+					i++;
+				}
+			}
+
+			populate_days(next,day_last,false);
+			populate_days(prev,zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2),false);
+		}
+		//this clearly needs to be moved somewhere else but whatever
+		G_FIRST_DAY = { page_1: 0, page_2: 0, page_3:0 };
+		G_LAST_DAY = { page_1: 0, page_2: 0, page_3:0 };
+		function populate_days(element, day_first, recurse) //element id, first day in YYYYMMDD format, bool recurse
+		{
+			$(".dayscontainer",$("#"+element)).html("");
+			var j=0;
+			var today = new Date();
+			var first_day = new Date(day_first.substring(0,4),day_first.substring(4,6)-1,day_first.substring(6,8),12);
+			var d = new Date(first_day.getFullYear(),first_day.getMonth(),first_day.getDate(),12);
+			for(var i=0;i<PREF_MAX_EVENTS;i++)
+			{
+				var daytitle = "";
+				var istoday = false;
+				d.setDate(d.getDate() + j);
+				var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
+				var timelength = 1;
+
+
+				if(i==(PREF_MAX_EVENTS-1))
+				{
+					daytitle = "Upcoming";
+					timelength=PREF_UPCOMING_LENGTH;
+					j = PREF_UPCOMING_LENGTH;
+				}
+				else if((d.getDay() == 0 || d.getDay() == 6) && PREF_WEEKENDS_ARE_ONE_DAY)
+				{
+					var startday;
+					var endday;
+					if(d.getDay() == 0)
+					{
+						d.setDate(d.getDate()-1);
+						daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad((d.getDate()-1),2);
+						
+					}
+					j = 2;
+					timelength = 2;
+					daytitle="Weekend";
+					if(Math.abs(days_between(d,today)) >= 7)
+					{
+						daytitle += " of " + month_names_short[d.getMonth()] + ". " + d.getDate();
+						var next_end_day = new Date(d.getFullYear(),d.getMonth(),d.getDate(),12);
+						next_end_day.setDate(next_end_day.getDate()+1);
+						if(next_end_day.getMonth() == d.getMonth())
+						{
+							daytitle += " to " + next_end_day.getDate();
+						}
+						else
+						{
+							daytitle += " to " + month_names_short[next_end_day.getMonth()] + ". " + next_end_day.getDate();
+						}
+						if(d.getFullYear() != today.getFullYear()) {
+							daytitle +=  (" " + d.getFullYear());
+						}
+					}
+					else if(days_between(d,today) < 0)
+					{
+						daytitle = "Last Weekend";
+					}
+				}
+				else if(d.toDateString() == today.toDateString())
+				{
+					daytitle = "Today";
+					istoday = true;
+					j=1;
+				}
+				else
+				{
+					if(!istoday)
+					{
+						if(Math.abs(days_between(d,today)) < 7 && days_between(d,today) < 0)
+						{
+							daytitle = "Last ";
+						}
+						switch(d.getDay()) 
+						{
+							//Weekends are handled elsewhere if PREF_WEEKENDS_ARE_ONE_DAY is true
+							case 0:
+								daytitle+="Sunday";
+								break;
+							case 1:
+								daytitle+="Monday";
+								break;
+							case 2:
+								daytitle+="Tuesday";
+								break;
+							case 3:
+								daytitle+="Wednesday";
+								break;
+							case 4:
+								daytitle+="Thursday";
+								break;
+							case 5:
+								daytitle+="Friday";
+								break;
+							case 6:
+								daytitle+="Saturday";
+								break;
+							default:
+								daytitle="They've Invented a New Day!";
+								break;
+						}
+						if(Math.abs(days_between(d,today)) >= 7)
+						{
+							daytitle += ", " + month_names_short[d.getMonth()] + ". " + d.getDate();
+							if(d.getFullYear() != today.getFullYear()) {
+								daytitle +=  (" " + d.getFullYear());
+							}
+						}
+					}
+					j = 1;
+				}
+				
+				var days_class = daystring.toString();
+				if(timelength > 1)
+				{
+					days_class += " ";
+				}
+				var daystrings = [daystring];
+				for(var m=1;m<timelength;m++)
+				{
+					e = new Date(d.getTime());
+					e.setDate(e.getDate() + m);
+					daystrings[m] = (zero_pad(e.getFullYear(),4)+zero_pad(e.getMonth()+1,2)+zero_pad(e.getDate(),2)).toString();
+					days_class += daystrings[m];
+					if(m != timelength-1)
+					{
+						days_class += " "
+					}
+					
+				}
+
+				if(first_day.toDateString() != today.toDateString() && i == PREF_MAX_EVENTS-1)
+				{
+					$(".button_spot",$("#"+element)).html("<a href='#page_4' data-role='button'>Return to Today</a>");
+					$(".button_spot").trigger("create");
+				}
+				else
+				{
+					$(".button_spot",$("#"+element)).html("");
+					$(".button_spot").trigger("create");
+					$(".dayscontainer",$("#"+element)).append("<div data-role='collapsible' id='" + element + "_day_" + i.toString() 
+						+ "' class='day " + days_class + "' data-upcoming='" + ((i==PREF_MAX_EVENTS) ? 1 : 0) + "' data-timelength='" + timelength + "'>"
+						+ "<h4 class='daytitle'>" + daytitle + "<br /> " + "<object class='schoolday' style='font-size:11pt;'>" + "No School</object></h4>"
+						+ "<p class='daypara'>" + "" + "</p>"
+						+ "</div>");
+				}
+				//We have to do this in a weird asynchronous way
+				for(var n=0; n<daystrings.length;n++)
+				{
+					var objectStore = event_database.transaction("events").objectStore("events");
+					var keyRange = IDBKeyRange.only(daystrings[n]);
+					var t = objectStore.index("current_date").openCursor(keyRange);
+					t.onsuccess = function(event) {
+						var cursor = event.target.result;
+						if(cursor) {
+							var item = cursor.value;
+
+							if((is_bit_set(item.flags,0) || is_bit_set(item.flags,1)) && !is_bit_set(item.flags,27)) //Break
+							{
+								$(".schoolday",$("." + item.current_date,$("#"+element))).html(item.name);
+							}
+							$(".daypara",$("." + item.current_date,$("#"+element))).append(item.name + "<br />");
+							cursor.continue();
+						}
+					};
+				}
+			}
+			$(".dayscontainer").trigger("create");
+
+			if(element == "page_1")
+			{
+				G_FIRST_DAY.page_1 = zero_pad(first_day.getFullYear(),4)+zero_pad(first_day.getMonth()+1,2)+zero_pad(first_day.getDate(),2);
+				G_LAST_DAY.page_1 = daystring;
+			}
+			else if(element == "page_2")
+			{
+				G_FIRST_DAY.page_2 = zero_pad(first_day.getFullYear(),4)+zero_pad(first_day.getMonth()+1,2)+zero_pad(first_day.getDate(),2);
+				G_LAST_DAY.page_2 = daystring;
+			}
+			else if(element == "page_3")
+			{
+				G_FIRST_DAY.page_3 = zero_pad(first_day.getFullYear(),4)+zero_pad(first_day.getMonth()+1,2)+zero_pad(first_day.getDate(),2);
+				G_LAST_DAY.page_3 = daystring;
+			}
+			if(recurse)
+			{
+				do_other_days(element);
+				populate_days("page_4",zero_pad(today.getFullYear(),4)+zero_pad(today.getMonth()+1,2)+zero_pad(today.getDate(),2),false)
+			}
+		}
+
 		</script>
 	</head>
 	<body>
-		<div data-role="page" data-title="SMUS Calendar">
-			<div data-role="header">
-				<h1>Title</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#">Hello</a></li>
-						<li><a href="#">Bye</a></li>
-					</ul>
-				</div>
-			</div>
-			<div data-role="content" class="content-primary" style="padding-top:0px;">
-				<p id="errorconsole">Nothing in the error log</p>
 
-				<!-- Normally-hidden error popups. These are triggered by javascript -->
+		<div data-role="page" data-title="SMUS Calendar" id="page_1">
 
-				<div data-role="popup" id="popup_error" class="ui-content">
-				    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Close</a>
-					<p id="popup_error_text">You shouldn't be seeing this popup.<p>
-				</div>
-
-				<div data-role="popup" id="popup_loading" class="ui-content" data-dismissible="false" data-theme="none" data-shadow="false" data-overlay-theme="a" align="center">
-					<img src = "res/ajax-loader.gif">
-					<p>Please wait...</p>
-				</div>
-
-				<!-- End of popups -->
-
-				<div data-role="collapsible-set" id="collapsible_container" data-inset="false" data-collapsed-icon="false" data-expanded-icon="false">
-					<div data-role="collapsible" id="day1">
-						<h4>Today<br />Day 1</h4>
-						<p id="testpara1">I'm the collapsible set content for section 1.</p>
-					</div>
-			
-					<div data-role="collapsible" id="day2">
-						<h4>Tomorrow<br />Day 2</h4>
-						<p>I'm the collapsible set content for section 2.</p>
-					</div>
-
-					<div data-role="collapsible" id="day3">
-						<h4>Weekend</h4>
-						<p>I'm the collapsible set content for section 2.</p>
-					</div>
-
-					<div data-role="collapsible" id="day4">
-						<h4>Monday<br />Day 3</h4>
-						<p>I'm the collapsible set content for section 2.</p>
-					</div>
-
-					<div data-role="collapsible" id="day5">
-						<h4>Upcoming</h4>
-						<p>I'm the collapsible set content for section 2.</p>
-					</div>
-
-				</div>
-			</div>
-			<div data-role="footer">
-				<h4>Footer</h4>
-			</div>
 		</div>
+
+		<div data-role="page" data-title="SMUS Calendar" id="page_2">
+
+		</div>
+
+		<div data-role="page" data-title="SMUS Calendar" id="page_3">
+
+		</div>
+
+		<div data-role="page" data-title="SMUS Calendar" id="page_4">
+
+		</div>
+
 	</body>
 </html>
