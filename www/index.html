@@ -70,7 +70,10 @@
 
 		});
 
+		SWIPECOUNTER = 0;
 		$( document ).on( "swiperight", function() {
+			pop_error('swiped: ' + SWIPECOUNTER);
+			SWIPECOUNTER++;
 			var current_page = $.mobile.activePage.attr('id');
 			if(current_page == "page_1" || current_page == "page_4")
 			{
@@ -86,7 +89,7 @@
 			}
         });
 
-        $( document ).on( "swipeleft", function() {
+		$( document ).on( "swipeleft", function() {
 			var current_page = $.mobile.activePage.attr('id');
 			if(current_page == "page_1" || current_page == "page_4")
 			{
