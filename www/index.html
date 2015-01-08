@@ -36,6 +36,12 @@
 
 		<title>Test Page</title>
 		<script>
+
+		G_FIRST_DAY = { page_1: 0, page_2: 0, page_3:0 };
+		G_LAST_DAY = { page_1: 0, page_2: 0, page_3:0 };
+		G_NEXT_PAGE = "";
+		G_PREV_PAGE = "";
+
 		event_database = false;
 		$(document).bind('collapsibleexpand');
 		$(document).on( 'collapsibleexpand',function(event){
@@ -91,10 +97,10 @@
 
 		function next_page() {
 			var hash = window.location.hash;
+			var displaytype = "";
+			var daystring = "";
 			if(validate_urlhash(hash)==true)
 			{
-				var displaytype = "";
-				var daystring = "";
 				if(hash.length == 2)
 				{
 					displaytype = hash;
@@ -111,6 +117,47 @@
 					daystring = hash.substring(2,10);
 				}
 			}
+			else
+			{
+				displaytype = PREF_DEFAULT_DISPLAY_MODE;
+				daystring = to_datestring(new Date());
+			}
+
+			var today = new Date();
+			var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+			var day_first = to_datestring(d);
+
+			var q=0;
+			while(q<(PREF_MAX_EVENTS-1))
+			{
+				d.setDate(d.getDate()+1);
+				if(d.getDay() == 0)
+				{
+
+				}
+				else
+				{
+					q++;
+				}
+			}
+			var day_last = to_datestring(d);
+			var i=0;
+			var d = to_date(day_first);
+			while(i<(PREF_MAX_EVENTS-1))
+			{
+				d.setDate(d.getDate()-1);
+				if(d.getDay() == 0)
+				{
+					//don't count sundays
+				}
+				else
+				{
+					i++;
+				}
+			}
+
+			populate_days(next,day_last,false);
+			populate_days(prev,to_datestring(d),false);
 
 			var current_page = $.mobile.activePage.attr('id');
 			if(current_page == "page_1" || current_page == "page_4")
@@ -261,6 +308,7 @@
 			{
 				prev = "page_2";
 				next = "page_3";
+				//REMOVE
 				var today = new Date();
 				var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
 				day_first = to_datestring(d);
@@ -281,7 +329,6 @@
 				day_last = to_datestring(d);
 			}
 			var i=0;
-			console.log("a11a");
 			var d = to_date(day_first);
 			while(i<(PREF_MAX_EVENTS-1))
 			{
@@ -300,8 +347,7 @@
 			populate_days(prev,to_datestring(d),false);
 		}
 		//this clearly needs to be moved somewhere else but whatever
-		G_FIRST_DAY = { page_1: 0, page_2: 0, page_3:0 };
-		G_LAST_DAY = { page_1: 0, page_2: 0, page_3:0 };
+		
 		function populate_days(element, day_first, recurse) //element id, first day in YYYYMMDD format, bool recurse
 		{
 			$(".dayscontainer",$("#"+element)).html("");
