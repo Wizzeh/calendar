@@ -49,10 +49,10 @@
 
 		 */
 
-		G_FIRST_DAY = { page_1: 0, page_2: 0, page_3:0 };
-		G_LAST_DAY = { page_1: 0, page_2: 0, page_3:0 };
-		G_NEXT_PAGE = "";
-		G_PREV_PAGE = "";
+		// G_FIRST_DAY = new Object();
+		// G_LAST_DAY = new Object();
+		// G_NEXT_PAGE = "";
+		// G_PREV_PAGE = "";
 		event_database = false;
 		G_APP_LOADED = false;
 
@@ -86,6 +86,31 @@
 				displaytype = PREF_DEFAULT_DISPLAY_MODE;
 			}
 			return displaytype;
+		}
+
+		function get_current_datestring() {
+			var hash = window.location.hash;
+			var datestring = "";
+			if(validate_urlhash(hash) == true)
+			{
+				if(hash.length == 2)
+				{
+					datestring = to_datestring(new Date());
+				}
+				else if(hash.length == 8)
+				{
+					datestring = hash;
+				}
+				else if(hash.length == 10)
+				{
+					datestring = hash.substring(2,10);
+				}
+			}
+			else
+			{
+				datestring = to_datestring(new Date());
+			}
+			return datestring;
 		}
 
 		function get_default_displaytype() {
@@ -201,7 +226,7 @@
 			var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
 
 			console.log("dbstart");
-			populate_days(window.location.hash.substring(1,window.location.hash.length), window.location.hash.substring(7,window.location.hash.length), false);
+			populate_days(window.location.hash.substring(1,window.location.hash.length), get_current_datestring(), get_current_displaytype(), false);
 
 			// var x = $(".day");
 			// for(var i=0; i<x.length; i++)
@@ -248,6 +273,46 @@
 			$.mobile.changePage("#"+page, transition);
 		}
 
+		function num_days_for(displaytype) {
+			switch(displaytype)
+			{
+				case "7D":
+					return 7;
+				default:
+					return 7;
+			}
+		}
+
+		function merge_weekends(displaytype) {
+			switch(displaytype)
+			{
+				case "7D":
+					return PREF_WEEKENDS_ARE_ONE_DAY;
+				default:
+					return false;
+			}
+		}
+
+		//totally wrong!!!!!!!!!!!!!!!!!
+
+		function get_next_page(datestring, displaytype) {
+			var d = to_date(datestring);
+			var donelooping = false;
+			for(var i = 0; i < num_days_for(displaytype); i++) {
+				d.setDate(d.getDate()+1);
+				if(merge_weekends(displaytype) && d.get_Day() == 6)
+				{
+					//COME BACK HERE
+					d.setDate(d.getDate()+1);
+				}
+			}
+		}
+
+		function get_prev_page(datestring, displaytype) {
+			var d = to_date(datestring);
+			d.setDate(d.getDate()-1);
+			return to_datestring(d);
+		}
 
 		
 		/*
@@ -374,8 +439,6 @@
 
 		$(document).bind("pageshow");
 		$(document).on("pageshow",function(event){
-			
-
 			t_page_loaded = true;
 			if(!event_database) {
 				start_database("https://sds.smus.ca/student_timetable/25b6f23339cf25078c19dccfed606cbbb4678ffcd50b6f2c0a1e37542f02c65b",
@@ -390,9 +453,9 @@
 					$(this).show(400);
 				}
 				});
+
 				do_other_days($.mobile.activePage.attr('id'));
 			}
-
 		});
 
 
@@ -463,18 +526,22 @@
 				}
 			}
 
-			populate_days(next,day_last,false);
-			populate_days(prev,to_datestring(d),false);
+			populate_days(next,day_last,get_current_displaytype(),false);
+			populate_days(prev,to_datestring(d),get_current_displaytype(),false);
 		}
 		//this clearly needs to be moved somewhere else but whatever
 		
-		function populate_days(element, day_first, recurse) //element id, first day in YYYYMMDD format, bool recurse
+		function populate_days(element, day_first, displaytype, recurse) //element id, first day in YYYYMMDD format, str2 displaytype, bool recurse
 		{
 			$(".dayscontainer",$("#"+element)).html("");
+			$("#" + element).attr("firstday",day_first); 
+
+
 			var j=0;
 			var today = new Date();
 			var first_day = to_date(day_first);
 			var d = new Date(first_day.getFullYear(),first_day.getMonth(),first_day.getDate(),12);
+
 			for(var i=0;i<PREF_MAX_EVENTS;i++)
 			{
 				var daytitle = "";
