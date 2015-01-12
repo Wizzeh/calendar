@@ -14,6 +14,12 @@
 		
 
 		<script src="js/jquery-2.1.1.min.js"></script>
+		<script>
+		//overrides for jquery mobile only
+		$(document).on("mobileinit",function() {
+			$.mobile.autoInitializePage = false;
+		}); 
+		</script>
 		<script src="js/jquery.mobile-1.4.5.js"></script>
 		
 
@@ -37,12 +43,116 @@
 		<title>Test Page</title>
 		<script>
 
+		/*
+
+		 Globals 
+
+		 */
+
 		G_FIRST_DAY = { page_1: 0, page_2: 0, page_3:0 };
 		G_LAST_DAY = { page_1: 0, page_2: 0, page_3:0 };
 		G_NEXT_PAGE = "";
 		G_PREV_PAGE = "";
-
 		event_database = false;
+		G_APP_LOADED = false;
+
+
+		/*
+
+		Getters/Setters
+
+		*/
+
+		function get_current_displaytype() {
+			var hash = window.location.hash;
+			var displaytype = "";
+			if(validate_urlhash(hash)==true)
+			{
+				if(hash.length == 2)
+				{
+					displaytype = hash;
+				}
+				else if(hash.length == 8)
+				{
+					displaytype = PREF_DEFAULT_DISPLAY_MODE;
+				}
+				else if(hash.length == 10)
+				{
+					displaytype = hash.substring(0,2);
+				}
+			}
+			else
+			{
+				displaytype = PREF_DEFAULT_DISPLAY_MODE;
+			}
+			return displaytype;
+		}
+
+		function get_default_displaytype() {
+			return PREF_DEFAULT_DISPLAY_MODE;
+		}
+
+		function get_default_daystring() {
+			return to_datestring(new Date());
+		}
+
+
+		function get_next_page() {
+			return G_NEXT_PAGE;
+		}
+
+		function get_prev_page() {
+			return G_PREV_PAGE;
+		}
+
+
+		/*
+
+		Convenience Functions
+
+		*/
+
+		function to_datestring(d) { //accepts date as argument and outputs datestring
+			return (zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2)).toString();
+		}
+
+		function to_date(ds) { //accepts datestring as title
+			return new Date(ds.substring(0,4),ds.substring(4,6)-1,ds.substring(6,8),12);
+		}
+
+		function validate_urlhash(hash) {
+			if(hash != "" && (hash.length==2 || hash.length == 8 || hash.length == 10))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		function generate_page(pageid, firstday, displaytype, lastday) {
+			var s = "<div data-role='page' data-title='" + LOC_APP_NAME + "' id='" + pageid + "' class='calpage' data-firstday='" + firstday + "' data-displaytype='" + displaytype + "'></div>";
+			return s;
+		}
+
+
+		/*
+
+		Event Bindings
+
+		*/
+
+		$(document).ready(function() {
+
+			var firstday = get_default_daystring();
+			var displaytype = get_default_displaytype();
+			var lastday = "";
+			window.location.hash = "page" + displaytype + firstday;
+			$("#pagefooter").before(generate_page("page" + displaytype + firstday, firstday, displaytype, lastday));
+			$.mobile.initializePage();
+		});
+
 		$(document).bind('collapsibleexpand');
 		$(document).on( 'collapsibleexpand',function(event){
 
@@ -67,157 +177,170 @@
 
 		});
 
-		function fsErrorHandler(e){
-		  	pop_error("Error handler: " + e.name + ": " + e.message);
-		}
-
 		$(document).bind("deviceready");
 		$(document).on("deviceready",function(event){
-
+			//do nothing
 		});
 
-		function to_datestring(d) { //accepts date as argument and outputs datestring
-			return (zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2)).toString();
-		}
-
-		function to_date(ds) { //accepts datestring as title
-			return new Date(ds.substring(0,4),ds.substring(4,6)-1,ds.substring(6,8),12);
-		}
-
-		function validate_urlhash(hash) {
-			if(hash != "" && (hash.length==2 || hash.length == 8 || hash.length == 10))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		function next_page() {
-			var hash = window.location.hash;
-			var displaytype = "";
-			var daystring = "";
-			if(validate_urlhash(hash)==true)
-			{
-				if(hash.length == 2)
-				{
-					displaytype = hash;
-					daystring = to_datestring(new Date());
-				}
-				else if(hash.length == 8)
-				{
-					displaytype = PREF_DEFAULT_DISPLAY_MODE;
-					daystring = hash;
-				}
-				else if(hash.length == 10)
-				{
-					displaytype = hash.substring(0,2);
-					daystring = hash.substring(2,10);
-				}
-			}
-			else
-			{
-				displaytype = PREF_DEFAULT_DISPLAY_MODE;
-				daystring = to_datestring(new Date());
-			}
-
-			var today = new Date();
-			var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
-			var day_first = to_datestring(d);
-
-			var q=0;
-			while(q<(PREF_MAX_EVENTS-1))
-			{
-				d.setDate(d.getDate()+1);
-				if(d.getDay() == 0)
-				{
-
-				}
-				else
-				{
-					q++;
-				}
-			}
-			var day_last = to_datestring(d);
-			var i=0;
-			var d = to_date(day_first);
-			while(i<(PREF_MAX_EVENTS-1))
-			{
-				d.setDate(d.getDate()-1);
-				if(d.getDay() == 0)
-				{
-					//don't count sundays
-				}
-				else
-				{
-					i++;
-				}
-			}
-
-			populate_days(next,day_last,false);
-			populate_days(prev,to_datestring(d),false);
-
-			var current_page = $.mobile.activePage.attr('id');
-			if(current_page == "page_1" || current_page == "page_4")
-			{
-				$.mobile.changePage( "#page_3", { transition: "slide"});
-			}
-			else if(current_page == "page_2")
-			{
-				$.mobile.changePage( "#page_1", { transition: "slide"});
-			}
-        	else if(current_page == "page_3")
-			{
-				$.mobile.changePage( "#page_2", { transition: "slide"});
-			}
-		}
-
-		function prev_page() {
-			var current_page = $.mobile.activePage.attr('id');
-			if(current_page == "page_1" || current_page == "page_4")
-			{
-				$.mobile.changePage( "#page_2", { transition: "slide", reverse: true });
-			}
-			else if(current_page == "page_2")
-			{
-				$.mobile.changePage( "#page_3", { transition: "slide", reverse: true });
-			}
-        	else if(current_page == "page_3")
-			{
-				$.mobile.changePage( "#page_1", { transition: "slide", reverse: true });
-			}
-		}
-
-		function goto_origin()
-		{
-			//should go to origin
-		}
-
-		SWIPECOUNTER = 0;
+		//these may be reversed (but aren't)
 		$( document ).on( "swiperight", function() {
-			pop_error('swiped: ' + SWIPECOUNTER);
-			SWIPECOUNTER++;
 			prev_page();
         });
 
 		$( document ).on( "swipeleft", function() {
-			prev_page();
+			next_page();
         });
 
-		page_created = false;
+		//not technically an event binding but it's basically done that way.
+		function database_started(db)
+		{
+			event_database = db;
+
+			var today = new Date();
+			var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+			var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
+
+			console.log("dbstart");
+			populate_days(window.location.hash.substring(1,window.location.hash.length), window.location.hash.substring(7,window.location.hash.length), false);
+
+			// var x = $(".day");
+			// for(var i=0; i<x.length; i++)
+			// {
+			// 	$(".daypara",$(x[i])).html(x[i].id);
+			// }
+			pop_loading(false);
+			 //Trying to assign a global here
+			// var objectStore = db.transaction("events").objectStore("events");
+			// objectStore.openCursor().onsuccess = function(event) {
+			// 	var cursor = event.target.result;
+			// 	if(cursor)
+			// 	{
+			// 		cursor.continue();
+			// 	}
+			// };
+		}
+
+
+		/*
+
+		Page Functionality
+
+		*/
+
+		function next_page() {
+			goto_page( ("page" + get_current_displaytype() + get_next_page()) , {transition: "slide"});
+		}
+
+		function prev_page() {
+			goto_page( ("page" + get_current_displaytype() + get_prev_page()) , {transition: "slide", reverse: true});
+		}
+
+		function origin() {
+			goto_page( ("page" + get_current_displaytype() + get_prev_page()) , {transition: "slide"} );
+		}
+
+		function goto_page(page, transition) {
+			if($("#"+page).length == 0) {
+
+				//To complete:
+				$("#pagefooter").before(generate_page(pageid, firstday, displaytype, lastday));
+			}
+			$.mobile.changePage("#"+page, transition);
+		}
+
+
+		
+		/*
+
+		Unsorted Stuff (bad!)
+
+		*/
+
+		//update with #page
+
+			// var hash = window.location.hash;
+			// var displaytype = "";
+			// var daystring = "";
+			// if(validate_urlhash(hash)==true)
+			// {
+			// 	if(hash.length == 2)
+			// 	{
+			// 		displaytype = hash;
+			// 		daystring = to_datestring(new Date());
+			// 	}
+			// 	else if(hash.length == 8)
+			// 	{
+			// 		displaytype = PREF_DEFAULT_DISPLAY_MODE;
+			// 		daystring = hash;
+			// 	}
+			// 	else if(hash.length == 10)
+			// 	{
+			// 		displaytype = hash.substring(0,2);
+			// 		daystring = hash.substring(2,10);
+			// 	}
+			// }
+			// else
+			// {
+			// 	displaytype = PREF_DEFAULT_DISPLAY_MODE;
+			// 	daystring = to_datestring(new Date());
+			// }
+
+			// var today = new Date();
+			// var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+			// var day_first = to_datestring(d);
+
+			// var q=0;
+			// while(q<(PREF_MAX_EVENTS-1))
+			// {
+			// 	d.setDate(d.getDate()+1);
+			// 	if(d.getDay() == 0)
+			// 	{
+
+			// 	}
+			// 	else
+			// 	{
+			// 		q++;
+			// 	}
+			// }
+			// var day_last = to_datestring(d);
+			// var i=0;
+			// var d = to_date(day_first);
+			// while(i<(PREF_MAX_EVENTS-1))
+			// {
+			// 	d.setDate(d.getDate()-1);
+			// 	if(d.getDay() == 0)
+			// 	{
+			// 		//don't count sundays
+			// 	}
+			// 	else
+			// 	{
+			// 		i++;
+			// 	}
+			// }
+
+			// populate_days(next,day_last,false);
+			// populate_days(prev,to_datestring(d),false);
+
+
+
+			// var current_page = $.mobile.activePage.attr('id');
+			// if(current_page == "page_1" || current_page == "page_4")
+			// {
+			// 	$.mobile.changePage( "#page_2", { transition: "slide", reverse: true });
+			// }
+			// else if(current_page == "page_2")
+			// {
+			// 	$.mobile.changePage( "#page_3", { transition: "slide", reverse: true });
+			// }
+			// else if(current_page == "page_3")
+			// {
+			// 	$.mobile.changePage( "#page_1", { transition: "slide", reverse: true });
+			// }
+
+
 		$(document).bind("pagebeforecreate");
 		$(document).on("pagebeforecreate",function(event){
-
-			/*
-			Horrible string building incoming...
-			Current Page 	Previous Page 	Next Page
-			1 				2 				3
-			2 				3 				1
-			3 				1 				2
-			*/
-			if(!page_created)
+			if(!G_APP_LOADED)
 			{
 				var base_page = "";
 				base_page =
@@ -236,20 +359,18 @@
 					+ "</div>"
 					+ "<div id='button_spot_{1}' class='button_spot'></div>"
 				+ "</div>";
+				
+				$(".calpage").html(base_page);
+				
 
-
-				// Previous/Current/Next
-				$("#page_1").html(base_page.format("2","1","3"));
-				$("#page_4").html(base_page.format("2","1","3"));
-				$("#page_2").html(base_page.format("3","2","1"));
-				$("#page_3").html(base_page.format("1","3","2"));
-				page_created = true;
+				G_APP_LOADED = true;
 			}
+
 			$(function() {
 					$( "[data-role='navbar']" ).navbar();
 					$( "[data-role='header'], [data-role='footer']" ).toolbar();
 			});
-			});
+		});
 
 		$(document).bind("pageshow");
 		$(document).on("pageshow",function(event){
@@ -257,7 +378,6 @@
 
 			t_page_loaded = true;
 			if(!event_database) {
-				console.log("bad bad");
 				start_database("https://sds.smus.ca/student_timetable/25b6f23339cf25078c19dccfed606cbbb4678ffcd50b6f2c0a1e37542f02c65b",
 						"https://sds.smus.ca/export_calendar/break,day,period,event/10,26,16,11,5,4,8,9,25,6,28,1,3,2,20,29,30,22,31,23,18,17,19,32,33,34,21,12,13,14,15,7"
 				);
@@ -479,7 +599,7 @@
 
 				if(first_day.toDateString() != today.toDateString() && i == PREF_MAX_EVENTS-1)
 				{
-					$(".button_spot",$("#"+element)).html("<a href='#' data-role='button' onclick='goto_origin()'>Return to Today</a>");
+					$(".button_spot",$("#"+element)).html("<a href='#' data-role='button' onclick='origin()'>Return to Today</a>");
 					$(".button_spot").trigger("create");
 				}
 				else
@@ -554,23 +674,7 @@
 			</div>
 		</div>
 
-		<div data-role="page" data-title="SMUS Calendar" id="page_1">
-
-		</div>
-
-		<div data-role="page" data-title="SMUS Calendar" id="page_2">
-
-		</div>
-
-		<div data-role="page" data-title="SMUS Calendar" id="page_3">
-
-		</div>
-
-		<div data-role="page" data-title="SMUS Calendar" id="page_4">
-
-		</div>
-
-		<div data-role='footer' data-position='fixed' data-theme='a'>
+		<div id='pagefooter' data-role='footer' data-position='fixed' data-theme='a'>
 				<h4>LOC_PAGE_FOOTER</h4>
 		</div>
 

@@ -293,33 +293,7 @@ function start_database(path,path2)
 }
 
 
-function database_started(db)
-{
-	event_database = db;
 
-	var today = new Date();
-	var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
-	var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
-
-	console.log("dbstart");
-	populate_days("page_1",daystring,true);
-
-	// var x = $(".day");
-	// for(var i=0; i<x.length; i++)
-	// {
-	// 	$(".daypara",$(x[i])).html(x[i].id);
-	// }
-	pop_loading(false);
-	 //Trying to assign a global here
-	// var objectStore = db.transaction("events").objectStore("events");
-	// objectStore.openCursor().onsuccess = function(event) {
-	// 	var cursor = event.target.result;
-	// 	if(cursor)
-	// 	{
-	// 		cursor.continue();
-	// 	}
-	// };
-}
 
 function populate_events(current_date){
 
