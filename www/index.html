@@ -68,22 +68,22 @@
 			var displaytype = "";
 			if(validate_urlhash(hash)==true)
 			{
-				if(hash.length == 2)
+				if(hash.length == 7)
 				{
 					displaytype = hash;
 				}
-				else if(hash.length == 8)
+				else if(hash.length == 13)
 				{
-					displaytype = PREF_DEFAULT_DISPLAY_MODE;
+					displaytype = get_default_displaytype();
 				}
-				else if(hash.length == 10)
+				else if(hash.length == 15)
 				{
-					displaytype = hash.substring(0,2);
+					displaytype = hash.substring(5,7);
 				}
 			}
 			else
 			{
-				displaytype = PREF_DEFAULT_DISPLAY_MODE;
+				displaytype = get_default_displaytype();
 			}
 			return displaytype;
 		}
@@ -93,22 +93,22 @@
 			var datestring = "";
 			if(validate_urlhash(hash) == true)
 			{
-				if(hash.length == 2)
+				if(hash.length == 7)
 				{
-					datestring = to_datestring(new Date());
+					datestring = get_default_datestring();
 				}
-				else if(hash.length == 8)
+				else if(hash.length == 13)
 				{
 					datestring = hash;
 				}
-				else if(hash.length == 10)
+				else if(hash.length == 15)
 				{
-					datestring = hash.substring(2,10);
+					datestring = hash.substring(7,15);
 				}
 			}
 			else
 			{
-				datestring = to_datestring(new Date());
+				datestring = get_default_datestring();
 			}
 			return datestring;
 		}
@@ -117,17 +117,8 @@
 			return PREF_DEFAULT_DISPLAY_MODE;
 		}
 
-		function get_default_daystring() {
+		function get_default_datestring() {
 			return to_datestring(new Date());
-		}
-
-
-		function get_next_page() {
-			return G_NEXT_PAGE;
-		}
-
-		function get_prev_page() {
-			return G_PREV_PAGE;
 		}
 
 
@@ -142,11 +133,12 @@
 		}
 
 		function to_date(ds) { //accepts datestring as title
-			return new Date(ds.substring(0,4),ds.substring(4,6)-1,ds.substring(6,8),12);
+			var d = new Date(ds.substring(0,4),ds.substring(4,6)-1,ds.substring(6,8),12);
+			return d;
 		}
 
 		function validate_urlhash(hash) {
-			if(hash != "" && (hash.length==2 || hash.length == 8 || hash.length == 10))
+			if(hash != "" && (hash.length==7 || hash.length == 13 || hash.length == 15))
 			{
 				return true;
 			}
@@ -157,8 +149,32 @@
 		}
 
 		function generate_page(pageid, firstday, displaytype, lastday) {
-			var s = "<div data-role='page' data-title='" + LOC_APP_NAME + "' id='" + pageid + "' class='calpage' data-firstday='" + firstday + "' data-displaytype='" + displaytype + "'></div>";
+			console.log("Creating page " + pageid);
+			var s = "<div data-role='page' data-title='" + LOC_APP_NAME  + pageid + "' id='" + pageid + "' class='calpage' data-firstday='" + firstday + "' data-lastday='" + lastday + "' data-displaytype='" + displaytype + "'></div>";
 			return s;
+		}
+
+		function create_page(pageid, firstday, displaytype, lastday) {
+			$("#pagefooter").before(generate_page(pageid,firstday,displaytype,lastday));
+			var base_page = "";
+			base_page =
+			"" +
+			"<div data-role='content' class='content-primary' style='padding-top:0px;'>"
+				+ "<p id='errorconsole'>Nothing in the error log</p>"
+				+ "<div data-role='popup' id='popup_error' class='ui-content'>"
+					+ "<a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left'>Close</a>"
+					+ "<p id='popup_error_text'>You shouldn't be seeing this popup.</p>"
+				+ "</div>"
+				+ "<div data-role='popup' id='popup_loading' class='ui-content' data-dismissible='false' data-theme='none' data-shadow='false' data-overlay-theme='a' align='center'>"
+					+ "<img src='res/ajax-loader.gif'>"
+					+ "<p>Please wait...</p>"
+				+ "</div>"
+				+ "<div data-role='collapsible-set' id='collapsible_container' data-inset='false' data-collapsed-icon='false' data-expanded-icon='false' class='dayscontainer'>"
+				+ "</div>"
+				+ "<div id='button_spot_{1}' class='button_spot'></div>"
+			+ "</div>";
+			
+			$("#"+pageid).html(base_page);
 		}
 
 
@@ -169,13 +185,14 @@
 		*/
 
 		$(document).ready(function() {
-
-			var firstday = get_default_daystring();
-			var displaytype = get_default_displaytype();
+			console.log(get_current_datestring());
+			var firstday = get_current_datestring();
+			var displaytype = get_current_displaytype();
 			var lastday = "";
 			window.location.hash = "page" + displaytype + firstday;
-			$("#pagefooter").before(generate_page("page" + displaytype + firstday, firstday, displaytype, lastday));
+			create_page("page" + displaytype + firstday, firstday, displaytype, lastday);
 			$.mobile.initializePage();
+			
 		});
 
 		$(document).bind('collapsibleexpand');
@@ -225,8 +242,8 @@
 			var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
 			var daystring = zero_pad(d.getFullYear(),4)+zero_pad(d.getMonth()+1,2)+zero_pad(d.getDate(),2);
 
-			console.log("dbstart");
-			populate_days(window.location.hash.substring(1,window.location.hash.length), get_current_datestring(), get_current_displaytype(), false);
+			console.log("dbstart" + get_current_datestring());
+			populate_days(window.location.hash.substring(1,window.location.hash.length), get_current_datestring(), get_current_displaytype(), true);
 
 			// var x = $(".day");
 			// for(var i=0; i<x.length; i++)
@@ -253,22 +270,29 @@
 		*/
 
 		function next_page() {
-			goto_page( ("page" + get_current_displaytype() + get_next_page()) , {transition: "slide"});
+			var next = get_next_page_f(get_current_datestring(),get_current_displaytype());
+			var displaytype = get_current_displaytype();
+			goto_page( ("page" + displaytype + next) , {transition: "slide"}, next, displaytype, "");
 		}
 
 		function prev_page() {
-			goto_page( ("page" + get_current_displaytype() + get_prev_page()) , {transition: "slide", reverse: true});
+			var prev = get_prev_page_f(get_current_datestring(),get_current_displaytype());
+			var displaytype = get_current_displaytype();
+			goto_page( ("page" + displaytype +  prev), {transition: "slide", reverse: true}, prev, displaytype, "");
 		}
 
 		function origin() {
-			goto_page( ("page" + get_current_displaytype() + get_prev_page()) , {transition: "slide"} );
+			var today = new Date();
+			var origin = to_datestring(today);
+			var displaytype = get_current_displaytype();
+			goto_page( ("page" + displaytype + origin) , {transition: "slide"}, origin, displaytype, "" );
 		}
 
-		function goto_page(page, transition) {
+		function goto_page(page, transition, firstday, displaytype, lastday) {
 			if($("#"+page).length == 0) {
 
 				//To complete:
-				$("#pagefooter").before(generate_page(pageid, firstday, displaytype, lastday));
+				create_page(page, firstday, displaytype, lastday);
 			}
 			$.mobile.changePage("#"+page, transition);
 		}
@@ -293,23 +317,51 @@
 			}
 		}
 
-		//totally wrong!!!!!!!!!!!!!!!!!
-
-		function get_next_page(datestring, displaytype) {
+		//accepts last date
+		function get_next_page_l(datestring, displaytype) {
 			var d = to_date(datestring);
-			var donelooping = false;
-			for(var i = 0; i < num_days_for(displaytype); i++) {
-				d.setDate(d.getDate()+1);
-				if(merge_weekends(displaytype) && d.get_Day() == 6)
-				{
-					//COME BACK HERE
-					d.setDate(d.getDate()+1);
-				}
-			}
+			d.setDate(d.getDate()+1);
+			return to_datestring(d);
+			
 		}
 
-		function get_prev_page(datestring, displaytype) {
+
+
+		//accepts first date
+		function get_next_page_f(datestring,displaytype) {
 			var d = to_date(datestring);
+			var q = 0;
+			while(q<(num_days_for(displaytype)-1))
+			{
+				d.setDate(d.getDate()+1);
+				if(d.getDay() == 6 && merge_weekends(displaytype))
+				{
+					//don't count sundays
+				}
+				else
+				{
+					q++;
+				}
+			}
+			d.setDate(d.getDate()+1);
+			return to_datestring(d);
+		}
+
+		function get_prev_page_f(datestring, displaytype) {
+			var d = to_date(datestring);
+			var q = 0;
+			while(q<(num_days_for(displaytype)-1))
+			{
+				d.setDate(d.getDate()-1);
+				if(d.getDay() == 0 && merge_weekends(displaytype))
+				{
+					//don't count sundays
+				}
+				else
+				{
+					q++;
+				}
+			}
 			d.setDate(d.getDate()-1);
 			return to_datestring(d);
 		}
@@ -405,31 +457,6 @@
 
 		$(document).bind("pagebeforecreate");
 		$(document).on("pagebeforecreate",function(event){
-			if(!G_APP_LOADED)
-			{
-				var base_page = "";
-				base_page =
-				"" +
-				"<div data-role='content' class='content-primary' style='padding-top:0px;'>"
-					+ "<p id='errorconsole'>Nothing in the error log</p>"
-					+ "<div data-role='popup' id='popup_error' class='ui-content'>"
-						+ "<a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left'>Close</a>"
-						+ "<p id='popup_error_text'>You shouldn't be seeing this popup.</p>"
-					+ "</div>"
-					+ "<div data-role='popup' id='popup_loading' class='ui-content' data-dismissible='false' data-theme='none' data-shadow='false' data-overlay-theme='a' align='center'>"
-						+ "<img src='res/ajax-loader.gif'>"
-						+ "<p>Please wait...</p>"
-					+ "</div>"
-					+ "<div data-role='collapsible-set' id='collapsible_container' data-inset='false' data-collapsed-icon='false' data-expanded-icon='false' class='dayscontainer'>"
-					+ "</div>"
-					+ "<div id='button_spot_{1}' class='button_spot'></div>"
-				+ "</div>";
-				
-				$(".calpage").html(base_page);
-				
-
-				G_APP_LOADED = true;
-			}
 
 			$(function() {
 					$( "[data-role='navbar']" ).navbar();
@@ -454,6 +481,7 @@
 				}
 				});
 
+				console.log($.mobile.activePage.attr('id'));
 				do_other_days($.mobile.activePage.attr('id'));
 			}
 		});
@@ -462,72 +490,33 @@
 		function do_other_days(element)
 		{
 			var prev = "";
-			var next = "";
 			var day_first = "";
 			var day_last = "";
+
+			var last_firstday = $("#" + element).attr("firstday"); 
+			var last_lastday = $("#" + element).attr("lastday");
+
 			
-			if(element == "page_1")
-			{
-				prev = "page_2";
-				next = "page_3";
-				day_last = G_LAST_DAY.page_1;
-				day_first = G_FIRST_DAY.page_1;
-			}
-			else if(element == "page_2")
-			{
-				prev = "page_3";
-				next = "page_1";
-				day_last = G_LAST_DAY.page_2;
-				day_first = G_FIRST_DAY.page_2;
-			}
-			else if(element == "page_3")
-			{
-				prev = "page_1";
-				next = "page_2";
-				day_last = G_LAST_DAY.page_3;
-				day_first = G_FIRST_DAY.page_3;
-			}
-			else
-			{
-				prev = "page_2";
-				next = "page_3";
-				//REMOVE
-				var today = new Date();
-				var d = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
-				day_first = to_datestring(d);
 
-				var q=0;
-				while(q<(PREF_MAX_EVENTS-1))
-				{
-					d.setDate(d.getDate()+1);
-					if(d.getDay() == 0)
-					{
+			var next_num = get_next_page_l(last_lastday,get_current_displaytype());
 
-					}
-					else
-					{
-						q++;
-					}
-				}
-				day_last = to_datestring(d);
-			}
-			var i=0;
-			var d = to_date(day_first);
-			while(i<(PREF_MAX_EVENTS-1))
+			var prev_num = get_prev_page_f(last_firstday,get_current_displaytype());
+			console.log("cabd: " + next_num);
+
+			var next = "page" + get_current_displaytype() + next_num;
+			var prev = "page" + get_current_displaytype() + prev_num;
+
+			if($("#" + next).length == 0)
 			{
-				d.setDate(d.getDate()-1);
-				if(d.getDay() == 0)
-				{
-					//don't count sundays
-				}
-				else
-				{
-					i++;
-				}
+				create_page(next,next_num,get_current_displaytype(),"");
+				populate_days(next,next_num,get_current_displaytype(),false);
 			}
 
-			populate_days(next,day_last,get_current_displaytype(),false);
-			populate_days(prev,to_datestring(d),get_current_displaytype(),false);
+			if($("#" + prev).length == 0)
+			{
+				create_page(prev,prev_num,get_current_displaytype(),"");
+				populate_days(prev,prev_num,get_current_displaytype(),false);
+			}
 		}
 		//this clearly needs to be moved somewhere else but whatever
 		
@@ -541,7 +530,7 @@
 			var today = new Date();
 			var first_day = to_date(day_first);
 			var d = new Date(first_day.getFullYear(),first_day.getMonth(),first_day.getDate(),12);
-
+			console.log("b: " + day_first);
 			for(var i=0;i<PREF_MAX_EVENTS;i++)
 			{
 				var daytitle = "";
@@ -700,27 +689,13 @@
 					};
 				}
 			}
+			d.setDate(d.getDate()-1);
+			$("#" + element).attr("lastday",to_datestring(d)); 
 			$(".dayscontainer").trigger("create");
 
-			if(element == "page_1")
-			{
-				G_FIRST_DAY.page_1 = to_datestring(first_day);
-				G_LAST_DAY.page_1 = daystring;
-			}
-			else if(element == "page_2")
-			{
-				G_FIRST_DAY.page_2 = to_datestring(first_day);
-				G_LAST_DAY.page_2 = daystring;
-			}
-			else if(element == "page_3")
-			{
-				G_FIRST_DAY.page_3 = to_datestring(first_day);
-				G_LAST_DAY.page_3 = daystring;
-			}
 			if(recurse)
 			{
 				do_other_days(element);
-				populate_days("page_4",to_datestring(today),false)
 			}
 		}
 
