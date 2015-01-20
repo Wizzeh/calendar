@@ -220,6 +220,7 @@ function start_database(path,path2)
 											25 Soccer [Senior School: Athletics: Soccer]
 											26 Basketball [Senior School: Athletics: Basketball] 
 											27 Timetable override
+											28 Exams
 											
 											Note: Good form will be to tag an event with ALL tags
 											applicable to it, regardless of whether it possesses
@@ -425,5 +426,11 @@ function get_flags(value)
 	{
 		flags |= pow(2,26);
 	}
+	//27 Timetable override
+	if(value.indexOf("Exams") > -1)
+	{
+		flags |= pow(2,28);
+	}
+
 	return flags;
 }
